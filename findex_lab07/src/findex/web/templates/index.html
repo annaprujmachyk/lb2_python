@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>findex — Пошук</title><link rel="stylesheet" href="/static/style.css"></head>
+<body><main class="container"><header><span class="logo">findex<span class="dot">.</span></span><a href="/docs" class="nav">API /docs</a></header>
+<section class="hero"><p class="eyebrow">ЛАБОРАТОРНА РОБОТА №7</p><h1>Знайдіть потрібне <em>швидко.</em></h1><p class="intro">Пошук у вашому корпусі документів із ранжуванням BM25 та TF-IDF.</p></section>
+<form action="/" method="get" class="search-box"><label for="q" class="sr-only">Пошуковий запит</label><input id="q" type="search" name="q" maxlength="200" placeholder="Введіть пошуковий запит…" value="{{q}}" required autofocus><select name="scorer" aria-label="Алгоритм ранжування"><option value="bm25" {% if scorer == 'bm25' %}selected{% endif %}>BM25</option><option value="tfidf" {% if scorer == 'tfidf' %}selected{% endif %}>TF-IDF</option></select><button type="submit">Шукати →</button></form>
+{% if data %}<div class="result-meta">Знайдено: <strong>{{data.total}}</strong> · Час: {{data.took_ms}} мс · Сторінка {{page}}</div>
+{% if data.results %}<div class="results">{% for item in data.results %}<article class="result"><div class="result-top"><span class="doc-label">ДОКУМЕНТ #{{item.doc_id}}</span><span class="score">Оцінка {{"%.3f"|format(item.score)}}</span></div><h2><a href="/doc/{{item.doc_id}}">{{item.title}}</a></h2><p>{{item.snippet|highlight|safe}}</p></article>{% endfor %}</div>
+<nav class="pagination">{% if page > 1 %}<a href="/?q={{q|urlencode}}&scorer={{scorer}}&k={{k}}&page={{page-1}}">← Попередня</a>{% endif %}{% if page*k < data.total %}<a href="/?q={{q|urlencode}}&scorer={{scorer}}&k={{k}}&page={{page+1}}">Наступна →</a>{% endif %}</nav>
+{% else %}<div class="empty">Нічого не знайдено. Спробуйте інший запит.</div>{% endif %}{% else %}<div class="empty">Введіть слово або вираз, щоб почати пошук.</div>{% endif %}
+<footer>findex · FastAPI · Python · <a href="/health">Стан сервісу</a></footer></main></body></html>
